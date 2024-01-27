@@ -1,7 +1,4 @@
-import {
-  legacyLogicalPropertiesTransformer,
-  StyleProvider
-} from '@ant-design/cssinjs'
+import { StyleProvider } from '@ant-design/cssinjs'
 import { Button, Image } from 'antd'
 import cssText from 'data-text:~/src/main.css'
 import antdResetCssText from 'data-text:antd/dist/reset.css'
@@ -46,9 +43,7 @@ const Content = () => {
     container.addEventListener('click', (e) => {
       // @ts-ignore
       const src = e.target.dataset.src
-      const index = imgList.findIndex((v) => {
-        return v === src
-      })
+      const index = imgList.findIndex((v) => v === src)
 
       if (index === -1) return
 
