@@ -1,4 +1,7 @@
-import { StyleProvider } from '@ant-design/cssinjs'
+import {
+  legacyLogicalPropertiesTransformer,
+  StyleProvider
+} from '@ant-design/cssinjs'
 import { Button, Image } from 'antd'
 import cssText from 'data-text:~/src/main.css'
 import antdResetCssText from 'data-text:antd/dist/reset.css'
@@ -28,25 +31,67 @@ function getImagesRealUrl(images: NodeListOf<HTMLImageElement>) {
 }
 
 const Content = () => {
-  const [imgList, setImgList] = useState([])
   const previewRef = useRef<HTMLDivElement>(null)
+  const [imgList, setImgList] = useState([])
+  const [imgIndex, setImgIndex] = useState(0)
+  const [visible, setVisible] = useState(false)
 
   useEffect(() => {
     const images = document.querySelectorAll('img')
+
+    console.log(images)
+
     setImgList(getImagesRealUrl(images))
+
+    setTimeout(() => {
+      images.forEach((img) => {
+        img.addEventListener('click', (e) => {
+          // ts-ignore
+          const src = e.target.dataset.src
+
+          console.log(e.target, src)
+
+          if (src) {
+            console.log(src)
+            const index = imgList.indexOf(src)
+
+            console.log(index)
+            if (index !== -1) {
+              setVisible(true)
+              setImgIndex(index)
+            }
+          }
+        })
+      })
+    }, 0)
   }, [])
 
   return (
     <StyleProvider container={document.getElementById(HOST_ID).shadowRoot}>
-      <div className="p-4 fixed top-0 min-h-100vh w-full left-0 bg-gray-50">
+      <div className="p-4 fixed top-0 min-h-100vh w-full left-0">
         <div className="p-2">
-          <Button type="primary">开启相册模式</Button>
+          <Button type="primary" onClick={() => setVisible(true)}>
+            开启相册模式
+          </Button>
+
           <div ref={previewRef}>
             <Image.PreviewGroup
               items={imgList}
-              preview={{ getContainer: previewRef.current }}>
-              <Image src={imgList[0]} width={100} />
-            </Image.PreviewGroup>
+              preview={{
+                getContainer: previewRef.current,
+                visible,
+                onVisibleChange(v) {
+                  setVisible(v)
+                },
+                onChange(index) {
+                  setImgIndex(index)
+                },
+                current: imgIndex,
+                toolbarRender(v, { transform }) {
+                  transform.rotate = -90
+                  return v
+                }
+              }}></Image.PreviewGroup>
           </div>
         </div>
       </div>
