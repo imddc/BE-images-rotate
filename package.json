@@ -15,11 +15,13 @@
     "react-dom": "18.2.0"
   },
   "devDependencies": {
+    "@ant-design/cssinjs": "^1.18.4",
     "@ianvs/prettier-plugin-sort-imports": "4.1.1",
     "@types/chrome": "0.0.258",
     "@types/node": "20.11.5",
     "@types/react": "18.2.48",
     "@types/react-dom": "18.2.18",
+    "antd": "^5.13.2",
     "autoprefixer": "^10.4.17",
     "postcss": "^8.4.33",
     "prettier": "3.2.4",

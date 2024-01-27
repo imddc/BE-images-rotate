@@ -1,9 +1,16 @@
+import { StyleProvider } from '@ant-design/cssinjs'
+import { Button, Image } from 'antd'
 import cssText from 'data-text:~/src/main.css'
-import type { PlasmoCSConfig } from 'plasmo'
+import antdResetCssText from 'data-text:antd/dist/reset.css'
+import type { PlasmoCSConfig, PlasmoGetShadowHostId } from 'plasmo'
+import { useEffect, useRef, useState } from 'react'
+
+const HOST_ID = 'engage-csui'
+export const getShadowHostId: PlasmoGetShadowHostId = () => HOST_ID
 
 export const getStyle = () => {
   const style = document.createElement('style')
-  style.textContent = cssText
+  style.textContent = antdResetCssText + cssText
   return style
 }
 
@@ -14,26 +21,37 @@ export const config: PlasmoCSConfig = {
 
 console.clear()
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  const images = document.querySelectorAll('.rich_pages')
-  console.log('接收到了', request, sender)
-})
+function getImagesRealUrl(images: NodeListOf<HTMLImageElement>) {
+  return Array.from(images)
+    .map((img) => img.dataset.src)
+    .filter((v) => Boolean(v))
+}
 
-chrome.runtime.sendMessage(
-  {
-    info: '我是 content.js'
-  },
-  (res) => {
-    // 答复
-  }
-)
+const Content = () => {
+  const [imgList, setImgList] = useState([])
+  const previewRef = useRef<HTMLDivElement>(null)
 
-const CustomButton = () => {
+  useEffect(() => {
+    const images = document.querySelectorAll('img')
+    setImgList(getImagesRealUrl(images))
+  }, [])
+
   return (
-    <div className="p-4">
-      <button className="text-red">Custom button</button>
-    </div>
+    <StyleProvider container={document.getElementById(HOST_ID).shadowRoot}>
+      <div className="p-4 fixed top-0 min-h-100vh w-full left-0 bg-gray-50">
+        <div className="p-2">
+          <Button type="primary">开启相册模式</Button>
+          <div ref={previewRef}>
+            <Image.PreviewGroup
+              items={imgList}
+              preview={{ getContainer: previewRef.current }}>
+              <Image src={imgList[0]} width={100} />
+            </Image.PreviewGroup>
+          </div>
+        </div>
+      </div>
+    </StyleProvider>
   )
 }
 
-export default CustomButton
+export default Content
