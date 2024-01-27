@@ -38,33 +38,24 @@ const Content = () => {
 
   useEffect(() => {
     const images = document.querySelectorAll('img')
-
-    console.log(images)
-
     setImgList(getImagesRealUrl(images))
-
-    setTimeout(() => {
-      images.forEach((img) => {
-        img.addEventListener('click', (e) => {
-          // ts-ignore
-          const src = e.target.dataset.src
-
-          console.log(e.target, src)
-
-          if (src) {
-            console.log(src)
-            const index = imgList.indexOf(src)
-
-            console.log(index)
-            if (index !== -1) {
-              setVisible(true)
-              setImgIndex(index)
-            }
-          }
-        })
-      })
-    }, 0)
   }, [])
+
+  useEffect(() => {
+    const container = document.getElementById('img-content')
+    container.addEventListener('click', (e) => {
+      // @ts-ignore
+      const src = e.target.dataset.src
+      const index = imgList.findIndex((v) => {
+        return v === src
+      })
+
+      if (index === -1) return
+
+      setImgIndex(index)
+      setVisible(true)
+    })
+  })
 
   return (
     <StyleProvider container={document.getElementById(HOST_ID).shadowRoot}>
