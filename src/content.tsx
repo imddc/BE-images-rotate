@@ -1,9 +1,11 @@
 import { StyleProvider } from '@ant-design/cssinjs'
-import { Button, Image, Modal } from 'antd'
+import { Button, Image } from 'antd'
 import cssText from 'data-text:~/src/main.css'
 import antdResetCssText from 'data-text:antd/dist/reset.css'
 import type { PlasmoCSConfig, PlasmoGetShadowHostId } from 'plasmo'
 import { useEffect, useRef, useState } from 'react'
+
+import { useStorage } from '@plasmohq/storage/hook'
 
 import Settings from './components/Settings'
 
@@ -37,7 +39,7 @@ const Content = () => {
   const [imgList, setImgList] = useState([])
   const [imgIndex, setImgIndex] = useState(0)
   const [visible, setVisible] = useState(false)
-  const [previewState, setPreviewState] = useState({
+  const [storage, setStorage] = useStorage('previewSettings', {
     rotate: 90,
     scale: 1
   })
@@ -70,7 +72,7 @@ const Content = () => {
               开启相册模式
             </Button>
 
-            <Settings data={previewState} onChange={setPreviewState} />
+            <Settings data={storage} onChange={setStorage} />
           </div>
 
           <div ref={previewRef}>

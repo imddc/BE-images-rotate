@@ -18,8 +18,6 @@ const Settings = ({ data, onChange }) => {
           open={isModalOpen}
           onOk={() => setIsModalOpen(false)}
           onCancel={() => setIsModalOpen(false)}
-          okText="确定"
-          cancelText="取消"
           getContainer={modalRef.current}>
           <div>
             <span>旋转角度： </span>
