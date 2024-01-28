@@ -1,9 +1,11 @@
 import { StyleProvider } from '@ant-design/cssinjs'
-import { Button, DatePicker, Image } from 'antd'
+import { Button, Image, Modal } from 'antd'
 import cssText from 'data-text:~/src/main.css'
 import antdResetCssText from 'data-text:antd/dist/reset.css'
 import type { PlasmoCSConfig, PlasmoGetShadowHostId } from 'plasmo'
 import { useEffect, useRef, useState } from 'react'
+
+import Settings from './components/Settings'
 
 const HOST_ID = 'engage-csui'
 const SHOW_HOST = 'mp.weixin.qq.com'
@@ -35,6 +37,10 @@ const Content = () => {
   const [imgList, setImgList] = useState([])
   const [imgIndex, setImgIndex] = useState(0)
   const [visible, setVisible] = useState(false)
+  const [previewState, setPreviewState] = useState({
+    rotate: 90,
+    scale: 1
+  })
 
   useEffect(() => {
     const images = document.querySelectorAll('img')
@@ -58,11 +64,13 @@ const Content = () => {
   return (
     <StyleProvider container={document.getElementById(HOST_ID).shadowRoot}>
       <div className="p-4 fixed top-0 min-h-100vh w-full left-0">
-        <div className="p-2 bg-white w-fit rounded-md">
-          <div className="flex items-center justify-between gap-4">
+        <div className="p-2 w-fit rounded-md">
+          <div className="flex items-center justify-between gap-2">
             <Button type="primary" onClick={() => setVisible(true)}>
               开启相册模式
             </Button>
+
+            <Settings data={previewState} onChange={setPreviewState} />
           </div>
 
           <div ref={previewRef}>
