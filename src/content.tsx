@@ -1,11 +1,12 @@
 import { StyleProvider } from '@ant-design/cssinjs'
-import { Button, Image } from 'antd'
+import { Button, DatePicker, Image } from 'antd'
 import cssText from 'data-text:~/src/main.css'
 import antdResetCssText from 'data-text:antd/dist/reset.css'
 import type { PlasmoCSConfig, PlasmoGetShadowHostId } from 'plasmo'
 import { useEffect, useRef, useState } from 'react'
 
 const HOST_ID = 'engage-csui'
+const SHOW_HOST = 'mp.weixin.qq.com'
 export const getShadowHostId: PlasmoGetShadowHostId = () => HOST_ID
 
 export const getStyle = () => {
@@ -26,6 +27,10 @@ function getImagesRealUrl(images: NodeListOf<HTMLImageElement>) {
 }
 
 const Content = () => {
+  // 只在微信公众号页面生效
+  const url = window.location.hostname
+  if (url !== SHOW_HOST) return null
+
   const previewRef = useRef<HTMLDivElement>(null)
   const [imgList, setImgList] = useState([])
   const [imgIndex, setImgIndex] = useState(0)
@@ -38,7 +43,6 @@ const Content = () => {
 
   useEffect(() => {
     const container = document.getElementById('img-content')
-    if (!container) return
     container.addEventListener('click', (e) => {
       // @ts-ignore
       const src = e.target.dataset.src
@@ -55,9 +59,11 @@ const Content = () => {
     <StyleProvider container={document.getElementById(HOST_ID).shadowRoot}>
       <div className="p-4 fixed top-0 min-h-100vh w-full left-0">
         <div className="p-2 bg-white w-fit rounded-md">
-          <Button type="primary" onClick={() => setVisible(true)}>
-            开启相册模式
-          </Button>
+          <div className="flex items-center justify-between gap-4">
+            <Button type="primary" onClick={() => setVisible(true)}>
+              开启相册模式
+            </Button>
+          </div>
 
           <div ref={previewRef}>
             <Image.PreviewGroup
@@ -76,7 +82,8 @@ const Content = () => {
                   transform.rotate = -90
                   return v
                 }
-              }}></Image.PreviewGroup>
+              }}
+            />
           </div>
         </div>
       </div>
