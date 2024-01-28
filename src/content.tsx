@@ -54,7 +54,7 @@ const Content = () => {
   return (
     <StyleProvider container={document.getElementById(HOST_ID).shadowRoot}>
       <div className="p-4 fixed top-0 min-h-100vh w-full left-0">
-        <div className="p-2">
+        <div className="p-2 bg-white w-fit rounded-md">
           <Button type="primary" onClick={() => setVisible(true)}>
             开启相册模式
           </Button>
