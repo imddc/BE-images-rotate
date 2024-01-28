@@ -40,7 +40,7 @@ const Settings = ({ data, onChange }) => {
           <div className="mt-2">
             <span>放大倍数： </span>
             <InputNumber
-              min={1}
+              min={0.5}
               step={0.1}
               max={5}
               value={data.scale}

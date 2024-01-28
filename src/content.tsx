@@ -89,7 +89,8 @@ const Content = () => {
                 },
                 current: imgIndex,
                 toolbarRender(v, { transform }) {
-                  transform.rotate = -90
+                  transform.rotate = -storage.rotate
+                  transform.scale = storage.scale
                   return v
                 }
               }}
