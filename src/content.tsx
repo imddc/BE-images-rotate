@@ -19,8 +19,6 @@ export const config: PlasmoCSConfig = {
   all_frames: true
 }
 
-console.clear()
-
 function getImagesRealUrl(images: NodeListOf<HTMLImageElement>) {
   return Array.from(images)
     .map((img) => img.dataset.src)
