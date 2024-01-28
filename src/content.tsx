@@ -40,6 +40,7 @@ const Content = () => {
 
   useEffect(() => {
     const container = document.getElementById('img-content')
+    if (!container) return
     container.addEventListener('click', (e) => {
       // @ts-ignore
       const src = e.target.dataset.src
