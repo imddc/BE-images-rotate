@@ -10,7 +10,6 @@ import { useStorage } from '@plasmohq/storage/hook'
 import Settings from './components/Settings'
 
 const HOST_ID = 'engage-csui'
-const SHOW_HOST = 'mp.weixin.qq.com'
 export const getShadowHostId: PlasmoGetShadowHostId = () => HOST_ID
 
 export const getStyle = () => {
@@ -32,8 +31,6 @@ function getImagesRealUrl(images: NodeListOf<HTMLImageElement>) {
 
 const Content = () => {
   // 只在微信公众号页面生效
-  const url = window.location.hostname
-  if (url !== SHOW_HOST) return null
 
   const previewRef = useRef<HTMLDivElement>(null)
   const [imgList, setImgList] = useState([])
@@ -43,6 +40,12 @@ const Content = () => {
     rotate: 90,
     scale: 1
   })
+  const [pathName] = useStorage('canIUse')
+
+  function isSupposed() {
+    const url = window.location.hostname
+    return url === pathName || pathName === '*'
+  }
 
   useEffect(() => {
     const images = document.querySelectorAll('img')
@@ -51,53 +54,56 @@ const Content = () => {
 
   useEffect(() => {
     const container = document.getElementById('img-content')
-    container.addEventListener('click', (e) => {
-      // @ts-ignore
-      const src = e.target.dataset.src
-      const index = imgList.findIndex((v) => v === src)
+    container &&
+      container.addEventListener('click', (e) => {
+        // @ts-ignore
+        const src = e.target.dataset.src
+        const index = imgList.findIndex((v) => v === src)
 
-      if (index === -1) return
+        if (index === -1) return
 
-      setImgIndex(index)
-      setVisible(true)
-    })
+        setImgIndex(index)
+        setVisible(true)
+      })
   })
 
   return (
     <StyleProvider container={document.getElementById(HOST_ID).shadowRoot}>
-      <div className="p-4 fixed top-0 min-h-100vh w-full left-0">
-        <div className="p-2 w-fit rounded-md">
-          <div className="flex items-center justify-between gap-2">
-            <Button type="primary" onClick={() => setVisible(true)}>
-              开启相册模式
-            </Button>
+      {!isSupposed() ? null : (
+        <div className="p-4 fixed top-0 min-h-100vh w-full left-0">
+          <div className="p-2 w-fit rounded-md">
+            <div className="flex items-center justify-between gap-2">
+              <Button type="primary" onClick={() => setVisible(true)}>
+                开启相册模式
+              </Button>
 
-            <Settings data={storage} onChange={setStorage} />
-          </div>
+              <Settings data={storage} onChange={setStorage} />
+            </div>
 
-          <div ref={previewRef}>
-            <Image.PreviewGroup
-              items={imgList}
-              preview={{
-                getContainer: previewRef.current,
-                visible,
-                onVisibleChange(v) {
-                  setVisible(v)
-                },
-                onChange(index) {
-                  setImgIndex(index)
-                },
-                current: imgIndex,
-                toolbarRender(v, { transform }) {
-                  transform.rotate = -storage.rotate
-                  transform.scale = storage.scale
-                  return v
-                }
-              }}
-            />
+            <div ref={previewRef}>
+              <Image.PreviewGroup
+                items={imgList}
+                preview={{
+                  getContainer: previewRef.current,
+                  visible,
+                  onVisibleChange(v) {
+                    setVisible(v)
+                  },
+                  onChange(index) {
+                    setImgIndex(index)
+                  },
+                  current: imgIndex,
+                  toolbarRender(v, { transform }) {
+                    transform.rotate = -storage.rotate
+                    transform.scale = storage.scale
+                    return v
+                  }
+                }}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </StyleProvider>
   )
 }
