@@ -29,7 +29,7 @@ const Settings = ({ data, onChange }) => {
                   rotate: e.target.value
                 })
               }>
-              {[90, 180, 270].map((v) => (
+              {[0, 90, 180, 270].map((v) => (
                 <Radio.Button key={v} value={v}>
                   {v}
                 </Radio.Button>

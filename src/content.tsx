@@ -23,21 +23,22 @@ export const config: PlasmoCSConfig = {
   all_frames: true
 }
 
-function getImagesRealUrl(images: NodeListOf<HTMLImageElement>) {
-  return Array.from(images)
-    .map((img) => img.dataset.src)
-    .filter((v) => Boolean(v))
+function getImagesRealUrl(images: NodeListOf<Element>) {
+  return (
+    Array.from(images)
+      // @ts-ignore
+      .map((img) => img.dataset.src)
+      .filter((v) => Boolean(v))
+  )
 }
 
 const Content = () => {
-  // 只在微信公众号页面生效
-
   const previewRef = useRef<HTMLDivElement>(null)
   const [imgList, setImgList] = useState([])
   const [imgIndex, setImgIndex] = useState(0)
   const [visible, setVisible] = useState(false)
   const [storage, setStorage] = useStorage('previewSettings', {
-    rotate: 90,
+    rotate: 0,
     scale: 1
   })
   const [pathName] = useStorage('canIUse')
@@ -48,16 +49,19 @@ const Content = () => {
   }
 
   useEffect(() => {
-    const images = document.querySelectorAll('img')
+    const images = document.querySelectorAll('#img-content img')
     setImgList(getImagesRealUrl(images))
   }, [])
 
   useEffect(() => {
-    const container = document.getElementById('img-content')
+    const container = document.querySelector('#img-content')
     container &&
       container.addEventListener('click', (e) => {
+        // @ts-ignore 只作用于图片
+        if (e.target.tagName !== 'IMG') return
+
         // @ts-ignore
-        const src = e.target.dataset.src
+        const src = e.target.dataset.src || e.target.src
         const index = imgList.findIndex((v) => v === src)
 
         if (index === -1) return
@@ -65,10 +69,11 @@ const Content = () => {
         setImgIndex(index)
         setVisible(true)
       })
-  })
+  }, [imgList])
 
   return (
     <StyleProvider container={document.getElementById(HOST_ID).shadowRoot}>
+      {/* 只在微信公众号页面生效 */}
       {!isSupposed() ? null : (
         <div className="p-4 fixed top-0 min-h-100vh w-full left-0">
           <div className="p-2 w-fit rounded-md">
