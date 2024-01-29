@@ -11,9 +11,9 @@ const Popup = () => {
   const inputRef = useRef(null)
   const [showHost, setShowHost] = useStorage(CAN_I_USE, SHOW_HOST)
 
-  function handleReset() {
-    inputRef.current.value = SHOW_HOST
-    setShowHost(SHOW_HOST)
+  function handleSet(scope: string) {
+    inputRef.current.value = scope
+    setShowHost(scope)
   }
 
   return (
@@ -28,9 +28,13 @@ const Popup = () => {
         }}
       />
 
-      <div className="flex center gap-2 mt-2 pl-20">
-        <Button onClick={handleReset} size="small">
-          恢复默认
+      <div className="flex center justify-between gap-2 mt-2 pl-20">
+        <Button onClick={() => handleSet(SHOW_HOST)} size="small">
+          公众号
+        </Button>
+
+        <Button onClick={() => handleSet('*')} size="small">
+          全部
         </Button>
       </div>
     </div>
