@@ -25,7 +25,7 @@ const Popup = () => {
         onChange={(e) => setShowHost(e.target.value)}
       />
 
-      <div className="flex center gap-2 mt-2">
+      <div className="flex center gap-2 mt-2 pl-20">
         <Button onClick={handleReset} size="small">
           恢复默认
         </Button>
