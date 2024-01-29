@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useStorage } from '@plasmohq/storage/hook'
 
 import Settings from './components/Settings'
+import { CAN_I_USE, SHOW_HOST } from './config'
 
 const HOST_ID = 'engage-csui'
 export const getShadowHostId: PlasmoGetShadowHostId = () => HOST_ID
@@ -23,16 +24,26 @@ export const config: PlasmoCSConfig = {
   all_frames: true
 }
 
-function getImagesRealUrl(images: NodeListOf<Element>) {
-  return (
-    Array.from(images)
-      // @ts-ignore
-      .map((img) => img.dataset.src)
-      .filter((v) => Boolean(v))
-  )
-}
-
 const Content = () => {
+  const scopeMap = new Map([
+    [
+      SHOW_HOST,
+      {
+        container: document.querySelector('#img-content'),
+        images: '#img-content img',
+        realSrc: (v) => v.dataset.src
+      }
+    ],
+    [
+      '*',
+      {
+        container: document.body,
+        images: 'img',
+        realSrc: (v) => v.dataset.src || v.src
+      }
+    ]
+  ])
+
   const previewRef = useRef<HTMLDivElement>(null)
   const [imgList, setImgList] = useState([])
   const [imgIndex, setImgIndex] = useState(0)
@@ -41,20 +52,30 @@ const Content = () => {
     rotate: 0,
     scale: 1
   })
-  const [pathName] = useStorage('canIUse')
+  const [pathName] = useStorage(CAN_I_USE, SHOW_HOST)
+  const scope = scopeMap.get(pathName)
 
   function isSupposed() {
     const url = window.location.hostname
-    return url === pathName || pathName === '*'
+    return pathName === '*' || url.includes(pathName)
+  }
+
+  function getImagesRealUrl(images: NodeListOf<Element>) {
+    return (
+      Array.from(images)
+        // @ts-ignore
+        .map(scope.realSrc)
+        .filter(Boolean)
+    )
   }
 
   useEffect(() => {
-    const images = document.querySelectorAll('#img-content img')
+    const images = document.querySelectorAll(scope.images)
     setImgList(getImagesRealUrl(images))
-  }, [])
+  }, [pathName])
 
   useEffect(() => {
-    const container = document.querySelector('#img-content')
+    const container = scope.container
     container &&
       container.addEventListener('click', (e) => {
         // @ts-ignore 只作用于图片

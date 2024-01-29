@@ -5,11 +5,11 @@ import { useRef } from 'react'
 
 import { useStorage } from '@plasmohq/storage/hook'
 
-const SHOW_HOST = 'mp.weixin.qq.com'
+import { CAN_I_USE, SHOW_HOST } from './config'
 
 const Popup = () => {
   const inputRef = useRef(null)
-  const [showHost, setShowHost] = useStorage('canIUse', SHOW_HOST)
+  const [showHost, setShowHost] = useStorage(CAN_I_USE, SHOW_HOST)
 
   function handleReset() {
     inputRef.current.value = SHOW_HOST
@@ -22,7 +22,10 @@ const Popup = () => {
         ref={inputRef}
         placeholder={showHost}
         value={showHost}
-        onChange={(e) => setShowHost(e.target.value)}
+        onChange={(e) => {
+          console.log(e.target.value)
+          setShowHost(e.target.value)
+        }}
       />
 
       <div className="flex center gap-2 mt-2 pl-20">
